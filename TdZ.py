@@ -36,7 +36,30 @@ def ValidarEntero(nro, desde, hasta):
         else:
             return True  
     except:
-        return True            
+        return True
+    
+def VerificarCodigo(num):
+    i = 0
+    while i != 4:
+        if num[i] >= "a" and num[i] <= "z":
+            next
+        else:
+            return True
+        i = i+1
+    while i != 8:
+        if num[i] >= "0" and num[i] <= "9":
+            next
+        else:
+            return True
+        i = i+1
+
+def Tamaño(num):
+    while len(num) < 0 or len(num) > 8:
+            print("El código debe contener 8 dígitos")
+            print()
+            os.system("pause")
+            num = input("Ingrese el código del producto: ").lower()                        
+
 
 ### Programa Principal###
 afProductos = "C:\\Users\\matth\\Desktop\\TdZ\\productos.dat"
@@ -113,74 +136,40 @@ def Carga():
     global alProductos, afProductos                
     os.system("cls")
     res = str(input("¿Desea ingresar un nuevo producto? [S - N]: ").lower())
+    print()
     if res == "n":
         print("Regresando al menú anterior...")
         os.system("pause")
         Menu_Productos()
     elif res == "s":
-        cod = str(input("Ingrese el código del producto con el siguiente formato [ABCD - 123] o 0 para salir: ").upper())
-        while cod != "0":
-            os.system("cls")
-            pos = Busqueda(cod)
-            if pos != -1:
-                print("El código ingresado se encuentra registrado en el sistema, por favor ingrese otro")
-                print()
-                os.system("pause")
-            else:
-                rProd = Producto()
-                alProductos.seek(0, 2)
-                rProd.codigo = cod
-                rProd.nombre = str(input("Ingrese el nombre del producto: ").upper())
-                print()
-                rProd.marca = str(input("Ingrese la marca del producto: ").upper())
-                print()
-                rProd.talle = int(input("Ingrese el talle del producto [25 - 45]: "))
-                print()
-                while ValidarEntero(rProd.talle, 25, 45):
-                    print()
-                    print("El talle ingresado no está en el rango de los permitidos. [25 - 45]")
-                    os.system("pause")
-                    os.system("cls")
-                    rProd.talle = int(input("Ingrese el talle del producto [25 - 45]: "))
-                    print()
-                rProd.precio = float(input("Ingrese el precio del producto: "))
-                while ValidarReal(rProd.precio, 80000, 250000):
-                    print()
-                    print("El precio ingresado no respeta el rango asignado. [80000 - 250000]")
-                    os.system("pause")
-                    os.system("cls")
-                    rProd.precio = float(input("Ingrese el precio del producto [80000 - 250000]: "))
-                rProd.stock = int(input("Ingrese la cantidad de productos que ingresaron: "))
-                while ValidarEntero(rProd.stock, 0, 999999):
-                    print()
-                    print("No es posible cargar la cantidad ingresada, por favor ingresa nuevamente")
-                    os.system("pause")
-                    os.system("cls")
-                    rProd.stock = int(input("Ingrese la cantidad de productos que ingresaron: "))    
-                os.system("cls")
-                print("Código: ",rProd.codigo)
-                print("Nombre:",rProd.nombre)
-                print("Marca: ",rProd.marca)
-                print("Talle: ",rProd.talle)
-                print("Precio: ",rProd.precio)
-                print("Stock: ",rProd.stock)
-                print()
-                res2 = str(input("¿Confirmar carga del producto? [S - N]: ").lower())
-                if res2 == "s":
-                    pickle.dump(rProd, alProductos)
-                    alProductos.flush()
-                    print("Carga registrada")
-                    print()
-                    os.system("pause")
-            os.system("cls")
-            cod = str(input("Ingrese el código del producto o 0 para salir: ").upper())
+        print("El código debe ser de tipo [AAAA0000]")
+        cod = input("Ingrese el código del producto: ").lower()
+        print()
+        Tamaño(cod) #Se encarga de comprobar que la variable "cod" posea 8 dígitos
+        while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
+            print("El código ingresado no cumple con los requerimientos solicitados, por favor intenteló nuevamente")
+            print()
+            os.system("pause")
+            cod = input("Ingrese el código del producto: ").lower()
+            Tamaño(cod) #Se encarga de comprobar si la variable "cod" posee 8 dígitos
+        if Busqueda(cod) != -1: #Comprueba que no exista un producto con el mismo código registrado en el sistema
+            print("El codigo ya se encuentra registrado en el sistema")
+            os.system("pause")
+            Carga()
+        else:
+            rProd = Producto()
+            alProductos.seek(0, 2)
+            rProd.codigo = cod.upper()
+            rProd.nombre = input("Ingrese el nombre del producto: ").upper()
+            print()
+                
     else:
-        print("Lo ingresado no corresponde con las opciones dadas, por favor vuelva a intetarlo")
+        print("La opción ingresada no existe, por favor ingresela nuevamente")
         print()
         os.system("pause")
         Carga()
-    Carga()            
-
+    os.system("pause")
+    Carga()    
 
 def Busqueda(num):
     global alProductos, afProductos
