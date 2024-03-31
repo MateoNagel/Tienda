@@ -51,7 +51,7 @@ def VerificarCodigo(num):
             next
         else:
             return True
-        i = i+1
+        i = i+1      
 
 def Tamaño(num):
     while len(num) < 0 or len(num) > 8:
@@ -127,10 +127,41 @@ def Menu_Productos():
     elif Op == "5":
         Menu_Principal()     
     else:
-        print("La opción no existe, por favor ingresa una opción válida")
+        print("La opción no existe, por favor ingresa una opción válida.")
         print()
         os.system("pause")
         Menu_Productos()
+
+def Confirmar(respuesta):
+    if respuesta == "n":
+        print("Registro cancelado")
+        print()
+        os.system("pause")
+        Carga()
+    elif respuesta == "s":
+        return True
+    else:
+        print("La opción ingresada no existe, por favor intenteló de nuevo.")
+        print()
+        os.system("pause")
+    res = str(input("¿Desea registrar el producto? [S - N] :").lower())
+    Confirmar(res)    
+
+def Busqueda(num):
+    global alProductos, afProductos
+    t = os.path.getsize(afProductos)
+    alProductos.seek(0)
+    rProd = Producto()
+    encontrado = False
+    while alProductos.tell() < t and not encontrado:
+        pos = alProductos.tell()
+        rProd = pickle.load(alProductos)
+        if rProd.codigo == num:
+            encontrado = True
+    if encontrado:
+        return pos
+    else:
+        return -1        
 
 def Carga():
     global alProductos, afProductos                
@@ -142,49 +173,77 @@ def Carga():
         os.system("pause")
         Menu_Productos()
     elif res == "s":
-        print("El código debe ser de tipo [AAAA0000]")
+        rProd = Producto()
+        print("El código debe ser de tipo [AAAA0000].")
         cod = input("Ingrese el código del producto: ").lower()
         print()
         Tamaño(cod) #Se encarga de comprobar que la variable "cod" posea 8 dígitos
         while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
-            print("El código ingresado no cumple con los requerimientos solicitados, por favor intenteló nuevamente")
+            print("El código ingresado no cumple con los requerimientos solicitados, por favor intenteló nuevamente.")
             print()
             os.system("pause")
             cod = input("Ingrese el código del producto: ").lower()
             Tamaño(cod) #Se encarga de comprobar si la variable "cod" posee 8 dígitos
-        if Busqueda(cod) != -1: #Comprueba que no exista un producto con el mismo código registrado en el sistema
-            print("El codigo ya se encuentra registrado en el sistema")
+        pos = Busqueda(cod)
+        if pos != -1: #Comprueba que no exista un producto con el mismo código registrado en el sistema
+            print("El codigo ya se encuentra registrado en el sistema.")
             os.system("pause")
-            Carga()
+            Carga()  
         else:
             rProd = Producto()
-            alProductos.seek(0, 2)
             rProd.codigo = cod.upper()
-            rProd.nombre = input("Ingrese el nombre del producto: ").upper()
+            rProd.nombre = str(input("Ingrese el nombre del producto: ").upper())
             print()
-                
+            rProd.marca = str(input("Ingrese la marca del producto: ").upper())
+            print()
+            print("Los talles permitidos van de 25 a 45.")
+            rProd.talle = int(input("Ingrese el talle del producto: "))
+            print()
+            while ValidarEntero(rProd.talle, 25, 45):
+                print("El talle ingresado no está dentro del rango permitido.")
+                print()
+                os.system("pause")
+                print("Los talles permitidos van de 25 a 45.")
+                rProd.talle = int(input("Ingrese el talle del producto: "))
+                print("")
+            print("Los precios van de 75000 a 750000.")
+            rProd.precio = float(input("Ingresa el precio del producto: "))
+            print()
+            while ValidarReal(rProd.precio, 75000, 750000):
+                print("El precio ingresado es menor o supera al mencionado anteriormente, por favor ingresa un nuevo precio.")
+                print()
+                os.system("pause")
+                print("Los precios van de 75000 a 750000.")
+                rProd.precio = float(input("Ingresa el precio del producto: "))
+                print()
+            rProd.stock = int(input("Ingrese la cantidad de stock que posee del producto: "))
+            while ValidarEntero(rProd.stock, 1, 999999):
+                print("El stock ingresado es menor a 1, por favor ingresa un stock válido.")
+                print()
+                os.system("pause")
+                rProd.stock = int(input("Ingrese la cantidad de stock que posee del producto: "))
+                print()
+            os.system("cls")
+            print("Código:",rProd.codigo[0:4],"-",rProd.codigo[4:8])
+            print("Nombre:",rProd.nombre)
+            print("Marca:",rProd.marca)
+            print("Talle:",rProd.talle)
+            print("Precio:",rProd.precio)
+            print("Stock:",rProd.stock)
+            print()
+            res = str(input("¿Desea registrar el producto? [S - N] :").lower())
+            print()
+            Confirmar(res)
+            pickle.dump(rProd, alProductos)
+            alProductos.flush()
+            print("El producto se registró con éxito.")
+            print()    
     else:
-        print("La opción ingresada no existe, por favor ingresela nuevamente")
+        print("La opción ingresada no existe, por favor ingresela nuevamente.")
         print()
         os.system("pause")
         Carga()
     os.system("pause")
-    Carga()    
-
-def Busqueda(num):
-    global alProductos, afProductos
-    t = os.path.getsize(afProductos)
-    alProductos.seek(0, 0)
-    rProd = Producto()
-    encontrado = False
-    while alProductos.tell() < t and not encontrado:
-        pos = alProductos.tell()
-        rProd = pickle.load(alProductos)
-        if rProd.codigo == num:
-            encontrado = True
-    if encontrado:
-        return pos
-    else:
-        return -1          
+    Carga()            
 
 Menu_Principal()        
