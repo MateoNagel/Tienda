@@ -41,7 +41,7 @@ def ValidarEntero(nro, desde, hasta):
 def VerificarCodigo(num):
     i = 0
     while i != 4:
-        if num[i] >= "a" and num[i] <= "z":
+        if num[i].lower() >= "a" and num[i].lower() <= "z":
             next
         else:
             return True
@@ -51,14 +51,30 @@ def VerificarCodigo(num):
             next
         else:
             return True
-        i = i+1      
+        i = i+1
+
+def VerificarTexto(name, cant):
+    i = 0
+    while i != cant:
+        if name[i].lower() >= "a" and name[i].lower() <= "z":
+            next
+        elif name[i].lower() >= 0 and str(name[i]).lower() <= 9:
+            return True
+        i = i+1
+
+def TamañoTexto(name):    
+    while str(name) == "":
+        print("No se ha ingresado ningún nombre, por favor ingreselo nuevamente.")
+        print()
+        os.system("pause")
+        name = str(input("Ingrese el nombre del producto: ").upper())                       
 
 def Tamaño(num):
     while len(num) < 0 or len(num) > 8:
-            print("El código debe contener 8 dígitos")
-            print()
-            os.system("pause")
-            num = input("Ingrese el código del producto: ").lower()                        
+        print("El código debe contener 8 dígitos")
+        print()
+        os.system("pause")
+        num = input("Ingrese el código del producto: ").lower()                        
 
 
 ### Programa Principal###
@@ -175,25 +191,30 @@ def Carga():
     elif res == "s":
         rProd = Producto()
         print("El código debe ser de tipo [AAAA0000].")
-        cod = input("Ingrese el código del producto: ").lower()
+        cod = input("Ingrese el código del producto: ").upper()
         print()
         Tamaño(cod) #Se encarga de comprobar que la variable "cod" posea 8 dígitos
         while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
             print("El código ingresado no cumple con los requerimientos solicitados, por favor intenteló nuevamente.")
             print()
             os.system("pause")
-            cod = input("Ingrese el código del producto: ").lower()
+            cod = input("Ingrese el código del producto: ").upper()
+            print()
             Tamaño(cod) #Se encarga de comprobar si la variable "cod" posee 8 dígitos
         pos = Busqueda(cod)
-        if pos != -1: #Comprueba que no exista un producto con el mismo código registrado en el sistema
-            print("El codigo ya se encuentra registrado en el sistema.")
-            os.system("pause")
-            Carga()  
-        else:
+        if pos == -1: #Comprueba que no exista un producto con el mismo código registrado en el sistema
             rProd = Producto()
             rProd.codigo = cod.upper()
-            rProd.nombre = str(input("Ingrese el nombre del producto: ").upper())
+            rProd.nombre = input("Ingrese el nombre del producto: ").upper()
             print()
+            TamañoTexto(rProd.nombre)
+            while VerificarTexto(rProd.nombre, len(rProd.nombre)):
+                print("El nombre posee números o caracteres especiales, por favor ingrese nuevamente.")
+                print()
+                os.system("pause")
+                rProd.nombre = str(input("Ingrese el nombre del producto: ").upper())
+                print()
+                TamañoTexto(rProd.nombre)
             rProd.marca = str(input("Ingrese la marca del producto: ").upper())
             print()
             print("Los talles permitidos van de 25 a 45.")
@@ -205,7 +226,7 @@ def Carga():
                 os.system("pause")
                 print("Los talles permitidos van de 25 a 45.")
                 rProd.talle = int(input("Ingrese el talle del producto: "))
-                print("")
+                print()
             print("Los precios van de 75000 a 750000.")
             rProd.precio = float(input("Ingresa el precio del producto: "))
             print()
@@ -237,7 +258,11 @@ def Carga():
             pickle.dump(rProd, alProductos)
             alProductos.flush()
             print("El producto se registró con éxito.")
-            print()    
+            print()
+        else:
+            print("El codigo ya se encuentra registrado en el sistema.")
+            os.system("pause")
+            Carga()  
     else:
         print("La opción ingresada no existe, por favor ingresela nuevamente.")
         print()
