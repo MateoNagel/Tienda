@@ -40,42 +40,50 @@ def ValidarEntero(nro, desde, hasta):
     
 def VerificarCodigo(num):
     i = 0
-    while i != 4:
-        if num[i].lower() >= "a" and num[i].lower() <= "z":
-            next
-        else:
-            return True
-        i = i+1
-    while i != 8:
-        if num[i] >= "0" and num[i] <= "9":
-            next
-        else:
-            return True
-        i = i+1
+    if len(num) == 8:
+        while i != 4:
+            if num[i].lower() >= "a" and num[i].lower() <= "z":
+                next
+            else:
+                print("El código ingresado no cumple con los requerimientos solicitados, por favor intenteló nuevamente.")
+                print()
+                os.system("pause")
+                return True
+            i = i+1
+        while i != 8:
+            if num[i] >= "0" and num[i] <= "9":
+                next
+            else:
+                print("El código ingresado no cumple con los requerimientos solicitados, por favor intenteló nuevamente.")
+                print()
+                os.system("pause")
+                return True
+            i = i+1
+    else:
+        print("El código debe contener 8 dígitos.")
+        print()
+        os.system("pause")    
+        return True
+    return False    
 
-def VerificarTexto(name, cant):
+def ValidarTexto(name):
     i = 0
-    while i != cant:
-        if name[i].lower() >= "a" and name[i].lower() <= "z":
-            next
-        elif name[i].lower() >= 0 and str(name[i]).lower() <= 9:
-            return True
-        i = i+1
-
-def TamañoTexto(name):    
-    while str(name) == "":
-        print("No se ha ingresado ningún nombre, por favor ingreselo nuevamente.")
-        print()
+    if name != "":
+        while i != len(name):
+            if name[i].lower() >= "a" and name[i].lower() <= "z" or name[i] == " ":
+                next               
+            else:
+                print("El nombre no puede contener números o caracteres especiales.")
+                print()
+                os.system("pause")
+                return True
+            i = i+1
+    else:
+        print("El producto debe de contener un nombre, por favor ingreseló.")
+        print()                    
         os.system("pause")
-        name = str(input("Ingrese el nombre del producto: ").upper())                       
-
-def Tamaño(num):
-    while len(num) < 0 or len(num) > 8:
-        print("El código debe contener 8 dígitos")
-        print()
-        os.system("pause")
-        num = input("Ingrese el código del producto: ").lower()                        
-
+        return True                      
+    return False
 
 ### Programa Principal###
 afProductos = "C:\\Users\\matth\\Desktop\\TdZ\\productos.dat"
@@ -193,30 +201,23 @@ def Carga():
         print("El código debe ser de tipo [AAAA0000].")
         cod = input("Ingrese el código del producto: ").upper()
         print()
-        Tamaño(cod) #Se encarga de comprobar que la variable "cod" posea 8 dígitos
         while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
-            print("El código ingresado no cumple con los requerimientos solicitados, por favor intenteló nuevamente.")
-            print()
-            os.system("pause")
             cod = input("Ingrese el código del producto: ").upper()
             print()
-            Tamaño(cod) #Se encarga de comprobar si la variable "cod" posee 8 dígitos
         pos = Busqueda(cod)
         if pos == -1: #Comprueba que no exista un producto con el mismo código registrado en el sistema
             rProd = Producto()
             rProd.codigo = cod.upper()
             rProd.nombre = input("Ingrese el nombre del producto: ").upper()
             print()
-            TamañoTexto(rProd.nombre)
-            while VerificarTexto(rProd.nombre, len(rProd.nombre)):
-                print("El nombre posee números o caracteres especiales, por favor ingrese nuevamente.")
+            while ValidarTexto(rProd.nombre):
+                rProd.nombre = input("Ingrese el nombre: ").upper()
                 print()
-                os.system("pause")
-                rProd.nombre = str(input("Ingrese el nombre del producto: ").upper())
-                print()
-                TamañoTexto(rProd.nombre)
-            rProd.marca = str(input("Ingrese la marca del producto: ").upper())
+            rProd.marca = input("Ingrese la marca del producto: ").upper()
             print()
+            while ValidarTexto(rProd.marca):
+                rProd.marca = input("Ingrese la marca del producto: ").upper()
+                print()
             print("Los talles permitidos van de 25 a 45.")
             rProd.talle = int(input("Ingrese el talle del producto: "))
             print()
