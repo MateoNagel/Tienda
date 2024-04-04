@@ -22,25 +22,39 @@ class Cliente:
 
 ### Valida que el "nro" ingresado este dentro del rango asignado en las variables "desde" y "hasta" ###
 def ValidarReal(nro, desde, hasta):
-    try:
-        float(nro)
-        if float(nro) >= desde and float(nro) <= hasta:
-            return False
-        else:
+    if nro >= "1" and nro <= "9":
+        try:
+            float(nro)
+            if float(nro) >= desde and float(nro) <= hasta:
+                return False
+            else:
+                print("El precio ingresado es menor o supera al mencionado anteriormente, por favor ingresa un nuevo precio.")
+                print()
+                return True
+        except:
             return True
-    except:
-        return True    
+    else:
+        print("No se ha ingresado un número, por favor intenteló de nuevo.")
+        print()
+        return True        
 
 
 ### Valida que el "nro" ingresado este dentro del rango asignado en las variables "desde" y "hasta" ###
 def ValidarEntero(nro, desde, hasta):
-    try:              
-        int(nro)      
-        if int(nro) >= desde and int(nro) <= hasta:
-            return False
-        else:
-            return True  
-    except:
+    if nro >= "1" and nro <= "9":   
+        try:                    
+            int(nro)
+            if int(nro) >= desde and int(nro) <= hasta:
+                return False
+            else:
+                print("El talle ingresado no está dentro del rango permitido.")
+                print()
+                return True  
+        except:
+            return True 
+    else:
+        print("No se ha ingresado un número, por favor intenteló de nuevo.")
+        print()
         return True
     
 ### Verifica que los primeros 4 dígitos sean letras y los otros 4 dígitos sean números ###    
@@ -54,6 +68,7 @@ def VerificarCodigo(num):
                 print("El código ingresado no cumple con los requerimientos solicitados, por favor intenteló nuevamente.")
                 print()
                 os.system("pause")
+                os.system("cls")
                 return True
             i = i+1
         while i != 8:
@@ -63,12 +78,14 @@ def VerificarCodigo(num):
                 print("El código ingresado no cumple con los requerimientos solicitados, por favor intenteló nuevamente.")
                 print()
                 os.system("pause")
+                os.system("cls")
                 return True
             i = i+1
     else:
         print("El código debe contener 8 dígitos.")
         print()
-        os.system("pause")    
+        os.system("pause")
+        os.system("cls")    
         return True
     return False    
 
@@ -84,14 +101,17 @@ def ValidarTexto(name):
                 print("El nombre no puede contener números o caracteres especiales.")
                 print()
                 os.system("pause")
+                os.system("cls")
                 return True
             i = i+1
     else:
         print("El producto debe de contener un nombre, por favor ingreseló.")
         print()                    
         os.system("pause")
+        os.system("cls")
         return True                      
     return False
+
 
 ### Creación de Archivos ###
 afProductos = "C:\\Users\\matth\\Desktop\\TdZ\\productos.dat"
@@ -213,7 +233,6 @@ def Carga():
         os.system("pause")
         Menu_Productos()
     elif res == "s":
-        rProd = Producto()
         print("El código debe ser de tipo [AAAA0000].")
         cod = input("Ingrese el código del producto: ").upper()
         print()
@@ -235,31 +254,28 @@ def Carga():
                 rProd.marca = input("Ingrese la marca del producto: ").upper()
                 print()
             print("Los talles permitidos van de 25 a 45.")
-            rProd.talle = int(input("Ingrese el talle del producto: "))
+            rProd.talle = input("Ingrese el talle del producto: ")
             print()
             while ValidarEntero(rProd.talle, 25, 45):
-                print("El talle ingresado no está dentro del rango permitido.")
-                print()
                 os.system("pause")
+                os.system("cls")
                 print("Los talles permitidos van de 25 a 45.")
-                rProd.talle = int(input("Ingrese el talle del producto: "))
+                rProd.talle = input("Ingrese el talle del producto: ")
                 print()
             print("Los precios van de 75000 a 750000.")
-            rProd.precio = float(input("Ingresa el precio del producto: "))
+            rProd.precio = input("Ingresa el precio del producto: ")
             print()
             while ValidarReal(rProd.precio, 75000, 750000):
-                print("El precio ingresado es menor o supera al mencionado anteriormente, por favor ingresa un nuevo precio.")
-                print()
                 os.system("pause")
+                os.system("cls")
                 print("Los precios van de 75000 a 750000.")
-                rProd.precio = float(input("Ingresa el precio del producto: "))
+                rProd.precio = input("Ingresa el precio del producto: ")
                 print()
-            rProd.stock = int(input("Ingrese la cantidad de stock que posee del producto: "))
+            rProd.stock = input("Ingrese la cantidad de stock que posee del producto: ")
             while ValidarEntero(rProd.stock, 1, 999999):
-                print("El stock ingresado es menor a 1, por favor ingresa un stock válido.")
-                print()
                 os.system("pause")
-                rProd.stock = int(input("Ingrese la cantidad de stock que posee del producto: "))
+                os.system("cls")
+                rProd.stock = input("Ingrese la cantidad de stock que posee del producto: ")
                 print()
             os.system("cls")
             print("Código:",rProd.codigo[0:4],"-",rProd.codigo[4:8])
@@ -286,6 +302,51 @@ def Carga():
         os.system("pause")
         Carga()
     os.system("pause")
-    Carga()            
+    Carga()
+
+
+### En esta función se muestran los productos cargados ###
+def MostrarProductos():
+    os.system("cls")
+    t = os.path.getsize(afProductos)
+    alProductos.seek(0)
+    rProd = Producto()
+    while alProductos.tell() < t:
+        rProd = pickle.load(alProductos)
+        print("------------------------------")
+        print("Código:",rProd.codigo[0:4],"-",rProd.codigo[4:8])
+        print("Nombre:",rProd.nombre)
+        print("Marca:",rProd.marca)
+        print("Talle:",rProd.talle)
+        print("Precio:",rProd.precio)
+        print("Stock:",rProd.stock)
+        print("------------------------------")
+        print()
+    
+
+
+### En esta función se podrán elimiar productos ###
+def Eliminar():
+    os.system("cls")
+    res = input("¿Desea eliminar un producto? [S - N]: ").lower()
+    print()
+    if res == "n":
+        print("Regresando al menú anterior...")
+        os.system("pause")
+        Menu_Productos()
+    elif res == "s":
+        os.system("cls")
+        MostrarProductos()
+        os.system("pause")
+        
+                
+            
+    else:
+        print("La opción ingresada no existe, por favor ingresela nuevamente.")
+        print()
+        os.system("pause")
+        Eliminar()
+    os.system("pause")
+    Eliminar()       
 
 Menu_Principal()        
