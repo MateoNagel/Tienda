@@ -2,6 +2,7 @@ import os
 import pickle
 import os.path
 
+### Creación de registros ###
 class Producto:
     def __init__(self):
         self.codigo = ""
@@ -18,6 +19,8 @@ class Cliente:
         self.telefono = ""
         self.historial = "" 
 
+
+### Valida que el "nro" ingresado este dentro del rango asignado en las variables "desde" y "hasta" ###
 def ValidarReal(nro, desde, hasta):
     try:
         float(nro)
@@ -28,6 +31,8 @@ def ValidarReal(nro, desde, hasta):
     except:
         return True    
 
+
+### Valida que el "nro" ingresado este dentro del rango asignado en las variables "desde" y "hasta" ###
 def ValidarEntero(nro, desde, hasta):
     try:              
         int(nro)      
@@ -38,6 +43,7 @@ def ValidarEntero(nro, desde, hasta):
     except:
         return True
     
+### Verifica que los primeros 4 dígitos sean letras y los otros 4 dígitos sean números ###    
 def VerificarCodigo(num):
     i = 0
     if len(num) == 8:
@@ -66,6 +72,8 @@ def VerificarCodigo(num):
         return True
     return False    
 
+
+### Valida que el nombre y marca ingresado no esté vacío y que tampoco tenga números o caracteres especiales ###
 def ValidarTexto(name):
     i = 0
     if name != "":
@@ -85,7 +93,7 @@ def ValidarTexto(name):
         return True                      
     return False
 
-### Programa Principal###
+### Creación de Archivos ###
 afProductos = "C:\\Users\\matth\\Desktop\\TdZ\\productos.dat"
 if not os.path.exists(afProductos):
     alProductos = open(afProductos, "w+b")
@@ -98,7 +106,7 @@ if not os.path.exists(afClientes):
 else:
     alClientes = open(afClientes, "r+b")
 
-#MENU PRINCIPAL#
+### MENÚ PRINCIPAL ###
 def Menu_Principal():
     os.system("cls")
     print("MENU PRINCIPAL")
@@ -127,6 +135,8 @@ def Menu_Principal():
         os.system("pause")
         Menu_Principal()   
 
+
+### MENÚ PRODUCTOS ###
 def Menu_Productos():
     os.system("cls")
     print()
@@ -156,6 +166,8 @@ def Menu_Productos():
         os.system("pause")
         Menu_Productos()
 
+
+### Verifica que la variable "respuesta" sea igual a las propuestas en la función ###
 def Confirmar(respuesta):
     if respuesta == "n":
         print("Registro cancelado")
@@ -171,7 +183,9 @@ def Confirmar(respuesta):
     res = str(input("¿Desea registrar el producto? [S - N] :").lower())
     Confirmar(res)    
 
-def Busqueda(num):
+
+### Realiza una búsqueda para comprobar si la variable "num" es igual a un código ya cargado en el archivo productos.dat ###
+def BuscarCodigo(num):
     global alProductos, afProductos
     t = os.path.getsize(afProductos)
     alProductos.seek(0)
@@ -187,6 +201,8 @@ def Busqueda(num):
     else:
         return -1        
 
+
+### En esta función se podrán registrar nuevos productos ### 
 def Carga():
     global alProductos, afProductos                
     os.system("cls")
@@ -204,7 +220,7 @@ def Carga():
         while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
             cod = input("Ingrese el código del producto: ").upper()
             print()
-        pos = Busqueda(cod)
+        pos = BuscarCodigo(cod)
         if pos == -1: #Comprueba que no exista un producto con el mismo código registrado en el sistema
             rProd = Producto()
             rProd.codigo = cod.upper()
