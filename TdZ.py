@@ -11,6 +11,7 @@ class Producto:
         self.talle = 0
         self.precio = 0.0
         self.stock = 0
+        self.activo = False
 
 class Cliente:
     def __init__(self):
@@ -277,6 +278,7 @@ def Carga():
                 os.system("cls")
                 rProd.stock = input("Ingrese la cantidad de stock que posee del producto: ")
                 print()
+            rProd.activo = True    
             os.system("cls")
             print("Código:",rProd.codigo[0:4],"-",rProd.codigo[4:8])
             print("Nombre:",rProd.nombre)
@@ -307,46 +309,87 @@ def Carga():
 
 ### En esta función se muestran los productos cargados ###
 def MostrarProductos():
+    global alProductos, afProductos
     os.system("cls")
     t = os.path.getsize(afProductos)
     alProductos.seek(0)
     rProd = Producto()
     while alProductos.tell() < t:
         rProd = pickle.load(alProductos)
-        print("------------------------------")
-        print("Código:",rProd.codigo[0:4],"-",rProd.codigo[4:8])
-        print("Nombre:",rProd.nombre)
-        print("Marca:",rProd.marca)
-        print("Talle:",rProd.talle)
-        print("Precio:",rProd.precio)
-        print("Stock:",rProd.stock)
-        print("------------------------------")
-        print()
+        if rProd.activo == True:    
+            print("------------------------------")
+            print("Código:",rProd.codigo[0:4],"-",rProd.codigo[4:8])
+            print("Nombre:",rProd.nombre, end=' ')
+            print("|", end=' ')
+            print("Marca:",rProd.marca)
+            print("Talle:",rProd.talle, end=' ')
+            print("|", end=' ')
+            print("Precio:",rProd.precio)
+            print("Stock:",rProd.stock, end=' ')
+            print("|", end=' ')
+            print("Activo: Sí")
+            print("------------------------------")
+            print()
     
 
 
 ### En esta función se podrán elimiar productos ###
 def Eliminar():
+    global alProductos, afProductos
     os.system("cls")
-    res = input("¿Desea eliminar un producto? [S - N]: ").lower()
-    print()
-    if res == "n":
-        print("Regresando al menú anterior...")
-        os.system("pause")
-        Menu_Productos()
-    elif res == "s":
-        os.system("cls")
-        MostrarProductos()
-        os.system("pause")
-        
-                
-            
-    else:
-        print("La opción ingresada no existe, por favor ingresela nuevamente.")
+    t = os.path.getsize(afProductos)
+    if t == 0:
+        print("No se han encontrado productos en el sistema")
         print()
         os.system("pause")
-        Eliminar()
-    os.system("pause")
-    Eliminar()       
+        Menu_Productos()
+    else:    
+        res = input("¿Desea eliminar un producto? [S - N]: ").lower()
+        print()
+        if res == "n":
+            print("Regresando al menú anterior...")
+            os.system("pause")
+            Menu_Productos()
+        elif res == "s":
+            os.system("cls")
+            MostrarProductos()
+            print("El código debe ser de tipo [AAAA0000].")
+            cod = input("Ingrese el codigo del producto que desea eliminar: ").upper()
+            print()
+            while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
+                MostrarProductos()
+                print("El código debe ser de tipo [AAAA0000].")
+                cod = input("Ingrese el código del producto que desea eliminar: ").upper()
+                print()
+            pos = BuscarCodigo(cod)
+            if pos == -1:
+                print("El código ingresado no se encuentra cargado en el sistema.")
+                print()
+                os.system("pause")
+                Eliminar()
+            else:
+                alProductos.seek(pos, 0)
+                rProd = pickle.load(alProductos)
+                if rProd.activo == False:
+                    print("El producto ya se encuentra dado de baja.")
+                    print()
+                    os.system("pause")
+                    Eliminar()
+                else:
+                    rProd.activo = False
+                    alProductos.seek(pos)
+                    pickle.dump(rProd, alProductos)
+                    alProductos.flush()
+                    print("El producto fue dado debaja exitosamente")
+                    print()
+                    os.system("pause")
+                    Eliminar()            
+        else:
+            print("La opción ingresada no existe, por favor ingresela nuevamente.")
+            print()
+            os.system("pause")
+            Eliminar()
+        os.system("pause")
+        Eliminar()       
 
 Menu_Principal()        
