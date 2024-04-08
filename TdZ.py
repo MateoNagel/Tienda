@@ -114,6 +114,17 @@ def ValidarTexto(name):
     return False
 
 
+### Valida que la opción ingresada es igual a las propuestas ###
+def ValidarOpcion(opcion):
+    if opcion == "r" or opcion == "c" or opcion == "n" or opcion == "m" or opcion == "t" or opcion == "p" or opcion == "s":
+        return False
+    else:
+        print("La opción ingresada no existe, por favor intente de nuevo.")
+        print()
+        os.system("pause")
+        return True
+
+
 ### Creación de Archivos ###
 afProductos = "C:\\Users\\matth\\Desktop\\TdZ\\productos.dat"
 if not os.path.exists(afProductos):
@@ -223,7 +234,7 @@ def BuscarCodigo(num):
         return -1        
 
 
-### En esta función se podrán registrar nuevos productos ### 
+### En esta función se podrán cargar productos ### 
 def Carga():
     global alProductos, afProductos                
     os.system("cls")
@@ -390,6 +401,95 @@ def Eliminar():
             os.system("pause")
             Eliminar()
         os.system("pause")
-        Eliminar()       
+        Eliminar()
+
+
+### Valida que la opción ingresada es igual a las propuestas ###
+def ValidarOpcion(opcion):
+    if opcion == "r" or opcion == "c" or opcion == "n" or opcion == "m" or opcion == "t" or opcion == "p" or opcion == "s":
+        return False
+    else:
+        print("La opción ingresada no existe, por favor intente de nuevo.")
+        print()
+        os.system("pause")
+        return True
+    
+
+### En esta función se podrán modificar los productos ###
+def Modificar():
+    global afProductos, alProductos
+    os.system("cls")
+    t = os.path.getsize(afProductos)
+    if t == 0:
+        print("No se han encontrado productos en el sistema")
+        print()
+        os.system("pause")
+        Menu_Productos()
+    else:
+        res = input("¿Desea modificar algún producto? [S - N]: ").lower()
+        print()
+        if res == "n":
+            print("Regresando al menú anterior...")
+            os.system("pause")
+            Menu_Productos()
+        elif res == "s":
+            os.system("cls")
+            MostrarProductos()
+            print("El código debe ser de tipo [AAAA0000].")
+            cod = input("Ingrese el codigo del producto que a modificar: ").upper()
+            print()
+            while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
+                MostrarProductos()
+                print("El código debe ser de tipo [AAAA0000].")
+                cod = input("Ingrese el código del producto que desea eliminar: ").upper()
+                print()
+            pos = BuscarCodigo(cod)
+            if pos == -1:
+                print("El código no se encuentra cargado en el sistema.")
+                print()
+                os.system("pause")
+                Modificar()
+            else:
+                alProductos.seek(pos, 0)
+                rProd = pickle.load(alProductos)
+                if rProd.activo == False:
+                    print("El producto se encuentra dado de baja. Si quiere modificarlo deberá de darlo de alta en el menú correspondiente.")
+                    print()
+                    os.system("pause")
+                    Modificar()
+                else:    
+                    print("Las opciones a modificar son: ")
+                    print()
+                    print("R - Recargar")
+                    print("C - Código")
+                    print("N - Nombre")
+                    print("M - Marca")
+                    print("T - Talle")
+                    print("P - Precio")
+                    print("S - Stock")
+                    print()
+                    op = input("Ingrese la opción que desea modificar: ").lower() 
+                    while ValidarOpcion(op):
+                        os.system("cls")
+                        print("Las opciones a modificar son: ")
+                        print()
+                        print("R - Recargar")
+                        print("C - Código")
+                        print("N - Nombre")
+                        print("M - Marca")
+                        print("T - Talle")
+                        print("P - Precio")
+                        print("S - Stock")
+                        print()
+                        op = input("Ingrese la opción que desea modificar: ").lower()
+                    if op == "r":
+                                           
+
+        else:
+            print("La opción ingresada no existe, por favor ingresela nuevamente.")
+            print()
+            os.system("pause")
+            Modificar()            
+
 
 Menu_Principal()        
