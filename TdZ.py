@@ -11,7 +11,7 @@ class Producto:
         self.talle = 0
         self.precio = 0.0
         self.stock = 0
-        self.activo = False
+        self.activo = True
 
 class Cliente:
     def __init__(self):
@@ -288,8 +288,7 @@ def Carga():
                 os.system("pause")
                 os.system("cls")
                 rProd.stock = input("Ingrese la cantidad de stock que posee del producto: ")
-                print()
-            rProd.activo = True    
+                print()   
             os.system("cls")
             print("Código:",rProd.codigo[0:4],"-",rProd.codigo[4:8])
             print("Nombre:",rProd.nombre)
@@ -436,12 +435,12 @@ def Modificar():
             os.system("cls")
             MostrarProductos()
             print("El código debe ser de tipo [AAAA0000].")
-            cod = input("Ingrese el codigo del producto que a modificar: ").upper()
+            cod = input("Ingrese el codigo del producto que desea modificar: ").upper()
             print()
             while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
                 MostrarProductos()
                 print("El código debe ser de tipo [AAAA0000].")
-                cod = input("Ingrese el código del producto que desea eliminar: ").upper()
+                cod = input("Ingrese el código del producto que desea modificar: ").upper()
                 print()
             pos = BuscarCodigo(cod)
             if pos == -1:
@@ -483,8 +482,69 @@ def Modificar():
                         print()
                         op = input("Ingrese la opción que desea modificar: ").lower()
                     if op == "r":
-                                           
-
+                        while True:
+                            os.system("cls")
+                            print("El código debe ser de tipo [AAAA0000].")
+                            cod = input("Ingrese el nuevo código que tendrá el producto: ").upper()
+                            print()
+                            if VerificarCodigo(cod) == False and BuscarCodigo(cod) == -1:
+                                break
+                            elif VerificarCodigo(cod) == False and BuscarCodigo(cod) != -1:
+                                print("El código ingresado ya se encuentra registrado en un producto.")
+                                print("")
+                                os.system("pause")        
+                        rProd = Producto()
+                        rProd.codigo = cod.upper()
+                        rProd.nombre = input("Ingrese el nombre del producto: ").upper()
+                        print()
+                        while ValidarTexto(rProd.nombre):
+                            rProd.nombre = input("Ingrese el nombre: ").upper()
+                            print()
+                        rProd.marca = input("Ingrese la marca del producto: ").upper()
+                        print()
+                        while ValidarTexto(rProd.marca):
+                            rProd.marca = input("Ingrese la marca del producto: ").upper()
+                            print()
+                        print("Los talles permitidos van de 25 a 45.")
+                        rProd.talle = input("Ingrese el talle del producto: ")
+                        print()
+                        while ValidarEntero(rProd.talle, 25, 45):
+                            os.system("pause")
+                            os.system("cls")
+                            print("Los talles permitidos van de 25 a 45.")
+                            rProd.talle = input("Ingrese el talle del producto: ")
+                            print()
+                        print("Los precios van de 75000 a 750000.")
+                        rProd.precio = input("Ingresa el precio del producto: ")
+                        print()
+                        while ValidarReal(rProd.precio, 75000, 750000):
+                            os.system("pause")
+                            os.system("cls")
+                            print("Los precios van de 75000 a 750000.")
+                            rProd.precio = input("Ingresa el precio del producto: ")
+                            print()
+                        rProd.stock = input("Ingrese la cantidad de stock que posee del producto: ")
+                        while ValidarEntero(rProd.stock, 1, 999999):
+                            os.system("pause")
+                            os.system("cls")
+                            rProd.stock = input("Ingrese la cantidad de stock que posee del producto: ")
+                            print()   
+                        os.system("cls")
+                        print("Código:",rProd.codigo[0:4],"-",rProd.codigo[4:8])
+                        print("Nombre:",rProd.nombre)
+                        print("Marca:",rProd.marca)
+                        print("Talle:",rProd.talle)
+                        print("Precio:",rProd.precio)
+                        print("Stock:",rProd.stock)
+                        print()
+                        res = str(input("¿Desea registrar el producto? [S - N] :").lower())
+                        print()
+                        Confirmar(res)
+                        pickle.dump(rProd, alProductos)
+                        alProductos.flush()
+                        print("El producto se registró con éxito.")
+                        print()
+                        os.system("pause")    
         else:
             print("La opción ingresada no existe, por favor ingresela nuevamente.")
             print()
