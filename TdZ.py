@@ -422,6 +422,15 @@ def Mostrar(posicion):
     print("------------------------------")
     print()
         
+def mostrarProducto(vrProd):
+    salida = ""
+    salida = salida + '{:<15}'.format(vrProd.codigo.strip())
+    salida = salida + '{:<25}'.format(vrProd.nombre.strip())
+    salida = salida + '{:<15}'.format(vrProd.marca.strip())
+    salida = salida + '{:<15}'.format(vrProd.talle.strip())
+    salida = salida + '{:<15}'.format(vrProd.precio.strip())
+    salida = salida + '{:<15}'.format(vrProd.stock.strip())
+    print(salida)
 
 ### En esta función se podrán modificar los productos ###
 def Modificar():
@@ -443,7 +452,21 @@ def Modificar():
                 os.system("pause")
                 pass
                 Menu_Productos()
-            elif res.lower() == "s" :
+            elif res.lower() == "s":
+                print("Lista de Productos")
+                print()
+                print("Código", end="         ")
+                print("Nombre", end="                   ")
+                print("Marca", end="          ")
+                print("Talle", end="          ")
+                print("Precio", end="         ")
+                print("Stock")
+                print()
+                alProductos.seek(0)
+                while alProductos.tell() < t:
+                    prod = pickle.load(alProductos)
+                    mostrarProducto(prod)
+                print()
                 print("El código debe ser de tipo [AAAA0000].")
                 cod = input("Ingrese el código del producto que desea modificar: ").upper()
                 print()
@@ -460,19 +483,122 @@ def Modificar():
                 else:
                     alProductos.seek(pos)
                     rProd = pickle.load(alProductos)
-                    os.system("cls")
+                    os.system("pause")
                     while True:
                         os.system("cls")
-                        cod = input("Ingrese el nuevo código para el producto: ").upper()
-                        if rProd.codigo == cod:
-                            print("El código ingresado es igual al que posee el producto actualmente.")
-                            print()
-                            os.system("pause")
-                        elif Buscar(cod) != -1:
-                            print("El código ingresado se encuentra registrado en otro producto.")
-                            os.system("pause")
-                        elif VerificarCodigo(cod) == False and rProd.codigo != cod:
-                            break                
+                        Mostrar(pos)
+                        print("¿Qué desea modificar del producto?")
+                        print()
+                        print("1 - Código")
+                        print("2 - Nombre")
+                        print("3 - Marca")
+                        print("4 - Talle")
+                        print("5 - Precio")
+                        print("6 - Stock")
+                        print("7 - Finalizar")
+                        print()
+                        Op = input("Ingrese la opción: ")    
+                        if Op == "1":    
+                            while True:
+                                os.system("cls")
+                                cod = input("Ingrese el nuevo código para el producto: ").upper()
+                                if rProd.codigo == cod:
+                                    print("El código ingresado es igual al que posee el producto actualmente. Intenteló de nuevo.")
+                                    print()
+                                    os.system("pause")
+                                elif Buscar(cod) != -1:
+                                    print("El código ingresado se encuentra registrado en otro producto.")
+                                    os.system("pause")
+                                elif VerificarCodigo(cod) == False and rProd.codigo != cod:
+                                    break
+                            rProd.codigo = cod.upper()    
+                        elif Op == "2":        
+                            while True:
+                                os.system("cls")
+                                nombre = input("Ingrese el nuevo nombre para el producto: ").upper()
+                                if rProd.nombre == nombre:
+                                    print("El nombre ingresado es igual al que posee el producto actualmente. Intenteló de nuevo.")
+                                    print()
+                                    os.system("pause")
+                                elif Buscar(nombre) != -1:
+                                    print("El nombre ingresado se encuentra registrado en otro producto.")
+                                    print()
+                                    os.system("pause")    
+                                elif ValidarTexto(nombre) == False and rProd.nombre != nombre:
+                                    break
+                            rProd.nombre = nombre.upper()    
+                        elif Op == "3":    
+                            while True:
+                                os.system("cls")
+                                marca = input("Ingrese la nueva marca del producto: ").upper()
+                                if rProd.marca == marca:
+                                    print("La marca ingresada es igual al que posee el producto actualmente. Intenteló de nuevo.")
+                                    print()
+                                    os.system("pause")
+                                elif ValidarTexto(marca) == False:
+                                    break
+                            rProd.marca = marca.upper()        
+                        elif Op == "4":    
+                            while True:
+                                os.system("cls")
+                                talle = input("Ingrese el nuevo talle para el producto: ")
+                                if rProd.talle == talle:
+                                    print("El talle ingresado es igual al que posee el producto actualmente. Intenteló de nuevo.")
+                                    print()
+                                    os.system("pause")
+                                elif ValidarEntero(talle, 25, 45) == True:
+                                    print("El rango del talle va de 25 a 45. Intenteló de nuevo.")
+                                    print()
+                                    os.system("pause")
+                                elif ValidarEntero(talle, 25, 45) == False and rProd.talle != talle:
+                                    break
+                            rProd.talle = talle    
+                        elif Op == "5":    
+                            while True:
+                                os.system("cls")
+                                precio = input("Ingrese el nuevo precio para el producto: ")
+                                if rProd.precio == precio:
+                                    print("El precio ingresado es igual al que posee el producto actualmente. Intenteló de nuevo.")
+                                    print()
+                                    os.system("pause")
+                                elif ValidarReal(precio, 75000, 750000) == False and rProd.precio != precio:
+                                    break
+                            rProd.precio = precio    
+                        elif Op == "6":    
+                            while True:
+                                os.system("cls")
+                                stock = input("Ingrese el nuevo stock para el producto: ")
+                                if rProd.stock == stock:
+                                    print("El stock ingresado es igual al que posee el producto actualmente. Intenteló de nuevo.")
+                                    print()
+                                    os.system("pause")                         
+                                elif ValidarEntero(stock, 1, 999999) == False and rProd.stock != stock:
+                                    break
+                                rProd.stock = stock
+                            os.system("cls")
+                        elif Op == "7":    
+                            while True:
+                                res = input("¿Quiere confirmar la modificación del producto? [S - N]: ")
+                                print()
+                                if res.lower() == "s":
+                                    os.system("cls")
+                                    alProductos.seek(pos)
+                                    pickle.dump(rProd, alProductos)
+                                    alProductos.flush()
+                                    print("El producto se modificó con éxito.")
+                                    print()
+                                    os.system("pause")
+                                    Modificar()
+                                elif res.lower() == "n":
+                                    print("Modificación cancelada.")
+                                    print()
+                                    os.system("pause")
+                                    Modificar()
+                                else:
+                                    print("La respuesta ingresada no es válida. Por favor, intenteló de nuevo.")
+                                    print()
+                                    os.system("pause")        
+
 
 
 
