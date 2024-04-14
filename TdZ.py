@@ -11,7 +11,7 @@ class Producto:
         self.talle = 0
         self.precio = 0.0
         self.stock = 0
-        self.activo = True
+        self.activo = "A"
 
 class Cliente:
     def __init__(self):
@@ -316,31 +316,17 @@ def Carga():
     os.system("pause")
     Carga()
 
-
-### En esta función se muestran los productos cargados ###
-def MostrarProductos():
-    global alProductos, afProductos
-    os.system("cls")
-    t = os.path.getsize(afProductos)
-    alProductos.seek(0)
-    rProd = Producto()
-    while alProductos.tell() < t:
-        rProd = pickle.load(alProductos)
-        if rProd.activo == True:    
-            print("------------------------------")
-            print("Código:",rProd.codigo[0:4],"-",rProd.codigo[4:8])
-            print("Nombre:",rProd.nombre, end=' ')
-            print("|", end=' ')
-            print("Marca:",rProd.marca)
-            print("Talle:",rProd.talle, end=' ')
-            print("|", end=' ')
-            print("Precio:",rProd.precio)
-            print("Stock:",rProd.stock, end=' ')
-            print("|", end=' ')
-            print("Activo: Sí")
-            print("------------------------------")
-            print()
     
+def Prints():
+    print()
+    print("Código", end="         ")
+    print("Nombre", end="                   ")
+    print("Marca", end="          ")
+    print("Talle", end="          ")
+    print("Precio", end="         ")
+    print("Stock", end="          ")
+    print("Actividad")
+    print()
 
 
 ### En esta función se podrán elimiar productos ###
@@ -362,12 +348,28 @@ def Eliminar():
             Menu_Productos()
         elif res == "s":
             os.system("cls")
-            MostrarProductos()
+            print("Lista de Productos Activos")
+            Prints()
+            alProductos.seek(0)
+            while alProductos.tell() < t:
+                prod = pickle.load(alProductos)
+                if prod.activo == "A":
+                    mostrarProducto(prod)
+            print()        
+            print()
+            print("Lista de Productos Inactivos")        
+            Prints()
+            alProductos.seek(0)        
+            while  alProductos.tell() < t:
+                prod = pickle.load(alProductos)
+                if prod.activo == "B":
+                    mostrarProducto(prod)
+            print()
+            print()                   
             print("El código debe ser de tipo [AAAA0000].")
             cod = input("Ingrese el codigo del producto que desea eliminar: ").upper()
             print()
             while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
-                MostrarProductos()
                 print("El código debe ser de tipo [AAAA0000].")
                 cod = input("Ingrese el código del producto que desea eliminar: ").upper()
                 print()
@@ -380,13 +382,13 @@ def Eliminar():
             else:
                 alProductos.seek(pos, 0)
                 rProd = pickle.load(alProductos)
-                if rProd.activo == False:
+                if rProd.activo == "B":
                     print("El producto ya se encuentra dado de baja.")
                     print()
                     os.system("pause")
                     Eliminar()
                 else:
-                    rProd.activo = False
+                    rProd.activo = "B"
                     alProductos.seek(pos)
                     pickle.dump(rProd, alProductos)
                     alProductos.flush()
@@ -401,7 +403,6 @@ def Eliminar():
             Eliminar()
         os.system("pause")
         Eliminar()
-
 
 def Mostrar(posicion):
     alProductos.seek(posicion)
@@ -418,10 +419,10 @@ def Mostrar(posicion):
     print("Precio:",rProd.precio)
     print("Stock:",rProd.stock, end=' ')
     print("|", end=' ')
-    print("Activo: Sí")
+    print("Actividad:",rProd.activo)
     print("------------------------------")
-    print()
-        
+    print()    
+
 def mostrarProducto(vrProd):
     salida = ""
     salida = salida + '{:<15}'.format(vrProd.codigo.strip())
@@ -430,6 +431,7 @@ def mostrarProducto(vrProd):
     salida = salida + '{:<15}'.format(vrProd.talle.strip())
     salida = salida + '{:<15}'.format(vrProd.precio.strip())
     salida = salida + '{:<15}'.format(vrProd.stock.strip())
+    salida = salida + '{:<15}'.format(vrProd.activo.strip())
     print(salida)
 
 ### En esta función se podrán modificar los productos ###
@@ -454,18 +456,12 @@ def Modificar():
                 Menu_Productos()
             elif res.lower() == "s":
                 print("Lista de Productos")
-                print()
-                print("Código", end="         ")
-                print("Nombre", end="                   ")
-                print("Marca", end="          ")
-                print("Talle", end="          ")
-                print("Precio", end="         ")
-                print("Stock")
-                print()
+                Prints()
                 alProductos.seek(0)
                 while alProductos.tell() < t:
                     prod = pickle.load(alProductos)
-                    mostrarProducto(prod)
+                    if prod.activo != "A":    
+                        mostrarProducto(prod)
                 print()
                 print("El código debe ser de tipo [AAAA0000].")
                 cod = input("Ingrese el código del producto que desea modificar: ").upper()
@@ -483,7 +479,6 @@ def Modificar():
                 else:
                     alProductos.seek(pos)
                     rProd = pickle.load(alProductos)
-                    os.system("pause")
                     while True:
                         os.system("cls")
                         Mostrar(pos)
@@ -597,8 +592,80 @@ def Modificar():
                                 else:
                                     print("La respuesta ingresada no es válida. Por favor, intenteló de nuevo.")
                                     print()
-                                    os.system("pause")        
+                                    os.system("pause")
+            else:
+                print("La opción ingresada no es válida. Intenteló de nuevo.")
+                print()
+                os.system("pause")
 
+def Lista():
+    global alProductos, afProductos
+    os.system("cls")
+    t = os.path.getsize(afProductos)
+    if t == 0:
+        print("No hay productos cargados")
+        print()
+        os.system("pause")
+        Menu_Productos()
+    else:
+        while True:
+            alProductos.seek(0)
+            os.system("cls")
+            print("Ingrese la opción por la que desea buscar.")
+            print()
+            print("1 - Mostrar Todo")
+            print("2 - Buscar Por Marca")
+            print("3 - Buscar Por Talle")
+            print("4 - Salir")
+            print()
+            res = input("Ingrese la opción: ")
+            if res == "1":
+                os.system("cls")
+                print("Listado Completo de Productos")
+                Prints()
+                while alProductos.tell() < t:
+                    prod = pickle.load(alProductos)
+                    mostrarProducto(prod)
+                print()    
+                os.system("pause")
+                Lista()                    
+            elif res == "2":
+                os.system("cls")
+                while True:
+                    os.system("cls")
+                    marca = input("Ingrese la marca que desea buscar: ")
+                    print()
+                    if ValidarTexto(marca) == False:
+                        break
+                print("Listado de",marca.upper())
+                Prints()
+                while alProductos.tell() < t:
+                    prod = pickle.load(alProductos)
+                    if prod.marca.lower() == marca.lower():
+                        mostrarProducto(prod)
+                print()
+                os.system("pause")                                                   
+                Lista()
+            elif res == "3":
+                os.system("cls")
+                while True:
+                    os.system("cls")
+                    print("Los talles actuales van de 25 a 45.")
+                    talle = input("Ingrese el talle que desea buscar: ")
+                    print()
+                    if ValidarEntero(talle, 25, 45) != False:
+                        os.system("pause")
+                    else:
+                        break
+                print("Listado de Productos Talle Número",talle)
+                Prints()
+                while alProductos.tell() < t:
+                    prod = pickle.load(alProductos)
+                    if prod.talle == talle:        
+                        mostrarProducto(prod)    
+                print()
+                os.system("pause")
+                Lista()        
 
 
 
