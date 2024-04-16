@@ -163,7 +163,8 @@ def Menu_Principal():
     elif Op == "4":
         Menu_Reportes()
     elif Op == "5":
-        Salir()
+        alProductos.close()
+        alClientes.close()
     else:
         print("La opción no existe, por favor ingresa una opción válida")
         print()
@@ -194,9 +195,6 @@ def Menu_Productos():
     elif Op == "4":
         Lista()
     elif Op == "5":
-        print("Volviendo al menú anterior...")
-        print()
-        os.system("pause")
         Menu_Principal()
     else:
         print("La opción no existe, por favor ingresa una opción válida.")
@@ -204,6 +202,8 @@ def Menu_Productos():
         os.system("pause")
         Menu_Productos()
         
+
+
 
 
 ### Realiza una búsqueda para comprobar si la variable "num" es igual a un código ya cargado en el archivo productos.dat ###
@@ -347,7 +347,6 @@ def Carga():
                     print()
                     os.system("pause")
                 elif res.lower() == "s":
-                    alProductos.seek(0)
                     rProd = Producto()
                     rProd.codigo = cod.upper()
                     rProd.nombre = nombre.upper()
@@ -405,55 +404,65 @@ def Eliminar():
             os.system("pause")
             Menu_Productos()
         elif res == "s":
-            os.system("cls")
-            print("Lista de Productos Activos")
-            Prints()
-            alProductos.seek(0)
-            while alProductos.tell() < t:
-                prod = pickle.load(alProductos)
-                if prod.activo == "A":
-                    mostrarProducto(prod)
-            print()        
-            print()
-            print("Lista de Productos Inactivos")        
-            Prints()
-            alProductos.seek(0)        
-            while  alProductos.tell() < t:
-                prod = pickle.load(alProductos)
-                if prod.activo == "B":
-                    mostrarProducto(prod)
-            print()
-            print()                   
-            print("El código debe ser de tipo [AAAA0000].")
-            cod = input("Ingrese el codigo del producto que desea eliminar: ").upper()
-            print()
-            while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
-                print("El código debe ser de tipo [AAAA0000].")
-                cod = input("Ingrese el código del producto que desea eliminar: ").upper()
+            while True:
+                os.system("cls")
+                print("Lista de Productos Activos")
+                Prints()
+                print("---------------------------------------------------------------------------------------------------------------")
+                alProductos.seek(0)
+                while alProductos.tell() < t:
+                    rProd = pickle.load(alProductos)
+                    if rProd.activo == "A":
+                        mostrarProducto(rProd)
+                print("---------------------------------------------------------------------------------------------------------------")
                 print()
-            pos = Buscar(cod)
-            if pos == -1:
-                print("El código ingresado no se encuentra cargado en el sistema.")
+                print("El código debe ser de tipo [AAAA0000].")
+                cod = input("Ingrese el codigo del producto que desea eliminar: ").upper()
+                print()
+                pos = Buscar(cod)
+                if cod == "0":
+                    print("Reiniciando menú...")
+                    print()
+                    os.system("pause")
+                    Eliminar()
+                elif pos == -1:
+                    print("El código ingresado no se encuentra cargado en el sistema.")
+                    print()
+                    os.system("pause")
+                elif VerificarCodigo(cod) == False and pos != -1:
+                    break
+            alProductos.seek(pos)
+            rProd = pickle.load(alProductos)
+            if rProd.activo == "B":
+                os.system("cls")
+                print("El producto actualmente se encuentra dado de baja.")
                 print()
                 os.system("pause")
                 Eliminar()
             else:
-                alProductos.seek(pos, 0)
-                rProd = pickle.load(alProductos)
-                if rProd.activo == "B":
-                    print("El producto ya se encuentra dado de baja.")
+                while True:
+                    os.system("cls")
+                    res = input("¿Está seguro que quiere dar de baja el producto? [S - N]: ")
                     print()
-                    os.system("pause")
-                    Eliminar()
-                else:
-                    rProd.activo = "B"
-                    alProductos.seek(pos)
-                    pickle.dump(rProd, alProductos)
-                    alProductos.flush()
-                    print("El producto fue dado debaja exitosamente")
-                    print()
-                    os.system("pause")
-                    Eliminar()            
+                    if res.lower() == "n":
+                        print("Baja cancelada.")
+                        print()
+                        os.system("pause")
+                        Modificar()
+                    elif res.lower() == "s":
+                        rProd.activo = "B"
+                        alProductos.seek(pos)
+                        pickle.dump(rProd, alProductos)
+                        alProductos.flush()
+                        print("La baja fue dada con éxito.")
+                        print()
+                        os.system("pause")
+                        Modificar()
+                    else:
+                        print("La opción ingresada no existe, por favor ingresela nuevamente.")
+                        print()
+                        os.system("pause")
+                        Eliminar()
         else:
             print("La opción ingresada no existe, por favor ingresela nuevamente.")
             print()
@@ -666,8 +675,8 @@ def Lista():
         os.system("pause")
         Menu_Productos()
     else:
+        alProductos.seek(0)
         while True:
-            alProductos.seek(0)
             os.system("cls")
             print("Ingrese la opción por la que desea buscar.")
             print()
