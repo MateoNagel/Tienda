@@ -203,7 +203,21 @@ def Menu_Productos():
         Menu_Productos()
         
 
-
+def Ordenamiento():
+    global alProductos
+    alProductos.seek(0)
+    productos = []
+    while True:
+        try:
+            productos.append(pickle.load(alProductos))
+        except EOFError:
+            break
+    productos.sort(key=lambda x: x.talle)
+    alProductos.seek(0)
+    alProductos.truncate()  # Limpiar el archivo
+    for prod in productos:
+        pickle.dump(prod, alProductos)
+    alProductos.flush()
 
 
 ### Realiza una búsqueda para comprobar si la variable "num" es igual a un código ya cargado en el archivo productos.dat ###
@@ -675,6 +689,7 @@ def Lista():
         os.system("pause")
         Menu_Productos()
     else:
+        Ordenamiento()
         alProductos.seek(0)
         while True:
             os.system("cls")
@@ -690,11 +705,13 @@ def Lista():
                 os.system("cls")
                 print("Listado Completo de Productos")
                 Prints()
-                while alProductos.tell() < t:
-                    prod = pickle.load(alProductos)
-                    mostrarProducto(prod)
-                print()    
-                os.system("pause")
+                while True:
+                    try:
+                        rProd = pickle.load(alProductos)
+                        mostrarProducto(rProd)
+                    except EOFError:
+                        break
+                os.system("pause")    
                 Lista()                    
             elif res == "2":
                 os.system("cls")
