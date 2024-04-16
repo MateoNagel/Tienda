@@ -1,3 +1,4 @@
+import keyboard
 import os
 import pickle
 import os.path
@@ -180,7 +181,7 @@ def Menu_Productos():
     print("2 - ELIMINAR PRODUCTO")
     print("3 - MODIFICAR PRODUCTO")
     print("4 - LISTA DE PRODUCTOS")
-    print("5 - VOLVER")
+    print("5 - REGRESAR")
     print()
     Op = str(input("Ingrese la opción: "))
     print()
@@ -193,12 +194,16 @@ def Menu_Productos():
     elif Op == "4":
         Lista()
     elif Op == "5":
-        Menu_Principal()     
+        print("Volviendo al menú anterior...")
+        print()
+        os.system("pause")
+        Menu_Principal()
     else:
         print("La opción no existe, por favor ingresa una opción válida.")
         print()
         os.system("pause")
         Menu_Productos()
+        
 
 
 ### Realiza una búsqueda para comprobar si la variable "num" es igual a un código ya cargado en el archivo productos.dat ###
@@ -263,6 +268,7 @@ def Carga():
                                 alProductos.flush()
                                 print("El producto fue dado de alta nuevamente.")
                                 print()
+                                os.system("pause")
                                 Carga()
                             else:
                                 print("La opción ingresada no existe, por favor ingresela nuevamente.")
@@ -272,33 +278,63 @@ def Carga():
                         print("El código ya le pertenece a otro producto.")
                         print()
                         os.system("pause")
+                elif cod == "0":
+                    print("Reiniciando menú...")
+                    print()
+                    os.system("pause")
+                    Carga()
                 elif pos == -1 and VerificarCodigo(cod) == False:
                     break
             while True:        
                 os.system("cls")
                 nombre = input("Ingrese el nombre del producto: ")
-                if ValidarTexto(nombre) == False:
+                if nombre == "0":
+                    print("Reiniciando menú...")
+                    print()
+                    os.system("pause")
+                    Carga()
+                elif ValidarTexto(nombre) == False:
                     break
             while True:
                 os.system("cls")
                 marca = input("Ingrese la marca del producto: ")
-                if ValidarTexto(marca) == False:
+                if marca == "0":
+                    print("Reiniciando menú...")
+                    print()
+                    os.system("pause")
+                    Carga()
+                elif ValidarTexto(marca) == False:
                     break
             while True:
                 os.system("cls")
                 print("Los talles con los que trabajamos van de 25 a 45.")
                 talle = input("Ingrese el talle del producto: ")
-                if ValidarEntero(talle, 25, 45) == False:
+                if talle == "0":
+                    print("Reiniciando menú...")
+                    print()
+                    os.system("pause")
+                    Carga()
+                elif ValidarEntero(talle, 25, 45) == False:
                     break
             while True:
                 os.system("cls")
                 print("Los precios actuales van desde 50.000 a 800.000")
                 precio = input("Ingrese el precio del producto: ")
-                if ValidarReal(precio, 50000, 800000) == False:
+                if precio == "0":
+                    print("Reiniciando menú...")
+                    print()
+                    os.system("pause")
+                    Carga()
+                elif ValidarReal(precio, 50000, 800000) == False:
                     break
             while True:
                 os.system("cls")
                 stock = input("Ingrese la cantidad de stock que posee: ")
+                if stock == "0":
+                    print("Reiniciando menú...")
+                    print()
+                    os.system("pause")
+                    Carga()
                 if ValidarEntero(stock, 1, 999999) == False:
                     break
             while True:
