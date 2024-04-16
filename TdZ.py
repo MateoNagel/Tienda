@@ -50,12 +50,14 @@ def ValidarEntero(nro, desde, hasta):
             else:
                 print("El talle ingresado no está dentro del rango permitido.")
                 print()
+                os.system("pause")
                 return True  
         except:
             return True 
     else:
         print("No se ha ingresado un número, por favor intenteló de nuevo.")
         print()
+        os.system("pause")
         return True
     
 ### Verifica que los primeros 4 dígitos sean letras y los otros 4 dígitos sean números ###    
@@ -199,23 +201,6 @@ def Menu_Productos():
         Menu_Productos()
 
 
-### Verifica que la variable "respuesta" sea igual a las propuestas en la función ###
-def Confirmar(respuesta):
-    if respuesta == "n":
-        print("Registro cancelado")
-        print()
-        os.system("pause")
-        Carga()
-    elif respuesta == "s":
-        return True
-    else:
-        print("La opción ingresada no existe, por favor intenteló de nuevo.")
-        print()
-        os.system("pause")
-    res = str(input("¿Desea registrar el producto? [S - N] :").lower())
-    Confirmar(res)    
-
-
 ### Realiza una búsqueda para comprobar si la variable "num" es igual a un código ya cargado en el archivo productos.dat ###
 def Buscar(dato):
     global alProductos, afProductos
@@ -226,7 +211,7 @@ def Buscar(dato):
     while alProductos.tell() < t and not encontrado:
         pos = alProductos.tell()
         rProd = pickle.load(alProductos)
-        if rProd.codigo == dato or rProd.nombre == dato:
+        if rProd.codigo.lower() == dato.lower() or rProd.nombre.lower() == dato.lower():
             encontrado = True
     if encontrado:
         return pos
@@ -236,85 +221,122 @@ def Buscar(dato):
 
 ### En esta función se podrán cargar productos ### 
 def Carga():
-    global alProductos, afProductos                
+    global alProductos, afProductos
+    rProd = Producto()                
     os.system("cls")
-    res = str(input("¿Desea ingresar un nuevo producto? [S - N]: ").lower())
-    print()
-    if res == "n":
-        print("Regresando al menú anterior...")
-        os.system("pause")
-        Menu_Productos()
-    elif res == "s":
-        print("El código debe ser de tipo [AAAA0000].")
-        cod = input("Ingrese el código del producto: ").upper()
+    while True:
+        os.system("cls")
+        res = input("¿Desea ingresar un nuevo producto? [S - N]: ")
         print()
-        while VerificarCodigo(cod): #Verifica que los primeros 4 dígitos sean letras y los 4 dígitos restantes sean números
-            cod = input("Ingrese el código del producto: ").upper()
-            print()
-        pos = Buscar(cod)
-        if pos == -1: #Comprueba que no exista un producto con el mismo código registrado en el sistema
-            rProd = Producto()
-            rProd.codigo = cod.upper()
-            rProd.nombre = input("Ingrese el nombre del producto: ").upper()
-            print()
-            while ValidarTexto(rProd.nombre):
-                rProd.nombre = input("Ingrese el nombre: ").upper()
-                print()
-            rProd.marca = input("Ingrese la marca del producto: ").upper()
-            print()
-            while ValidarTexto(rProd.marca):
-                rProd.marca = input("Ingrese la marca del producto: ").upper()
-                print()
-            print("Los talles permitidos van de 25 a 45.")
-            rProd.talle = input("Ingrese el talle del producto: ")
-            print()
-            while ValidarEntero(rProd.talle, 25, 45):
-                os.system("pause")
-                os.system("cls")
-                print("Los talles permitidos van de 25 a 45.")
-                rProd.talle = input("Ingrese el talle del producto: ")
-                print()
-            print("Los precios van de 75000 a 750000.")
-            rProd.precio = input("Ingresa el precio del producto: ")
-            print()
-            while ValidarReal(rProd.precio, 75000, 750000):
-                os.system("pause")
-                os.system("cls")
-                print("Los precios van de 75000 a 750000.")
-                rProd.precio = input("Ingresa el precio del producto: ")
-                print()
-            rProd.stock = input("Ingrese la cantidad de stock que posee del producto: ")
-            while ValidarEntero(rProd.stock, 1, 999999):
-                os.system("pause")
-                os.system("cls")
-                rProd.stock = input("Ingrese la cantidad de stock que posee del producto: ")
-                print()   
+        if res.lower() == "n":
             os.system("cls")
-            print("Código:",rProd.codigo[0:4],"-",rProd.codigo[4:8])
-            print("Nombre:",rProd.nombre)
-            print("Marca:",rProd.marca)
-            print("Talle:",rProd.talle)
-            print("Precio:",rProd.precio)
-            print("Stock:",rProd.stock)
+            print("Regresando al menú anterior...")
             print()
-            res = str(input("¿Desea registrar el producto? [S - N] :").lower())
-            print()
-            Confirmar(res)
-            pickle.dump(rProd, alProductos)
-            alProductos.flush()
-            print("El producto se registró con éxito.")
-            print()
-        else:
-            print("El codigo ya se encuentra registrado en el sistema.")
             os.system("pause")
-            Carga()  
-    else:
-        print("La opción ingresada no existe, por favor ingresela nuevamente.")
-        print()
-        os.system("pause")
-        Carga()
-    os.system("pause")
-    Carga()
+            Menu_Productos()
+        elif res.lower() == "s":
+            os.system("cls")
+            while True:
+                os.system("cls")
+                print("El código debe ser de tipo [AAAA0000].")
+                cod = input("Ingrese el código del producto: ")
+                pos = Buscar(cod)
+                print()
+                if pos != -1:
+                    alProductos.seek(pos)
+                    rProd = pickle.load(alProductos)
+                    if rProd.activo == "B":
+                        while True:
+                            os.system("cls")
+                            print("El producto está dado de baja.")
+                            print()
+                            res = input("¿Quiere darlo de alta nuevamente? [S - N]: ")
+                            print()
+                            if res.lower() == "n":
+                                print("El producto seguirá de baja.")
+                                print()
+                                os.system("pause")
+                            elif res.lower() == "s":
+                                rProd.activo = "A"
+                                alProductos.seek(pos)
+                                pickle.dump(rProd, alProductos)
+                                alProductos.flush()
+                                print("El producto fue dado de alta nuevamente.")
+                                print()
+                                Carga()
+                            else:
+                                print("La opción ingresada no existe, por favor ingresela nuevamente.")
+                                print()
+                                os.system("pause")
+                    else:
+                        print("El código ya le pertenece a otro producto.")
+                        print()
+                        os.system("pause")
+                elif pos == -1 and VerificarCodigo(cod) == False:
+                    break
+            while True:        
+                os.system("cls")
+                nombre = input("Ingrese el nombre del producto: ")
+                if ValidarTexto(nombre) == False:
+                    break
+            while True:
+                os.system("cls")
+                marca = input("Ingrese la marca del producto: ")
+                if ValidarTexto(marca) == False:
+                    break
+            while True:
+                os.system("cls")
+                print("Los talles con los que trabajamos van de 25 a 45.")
+                talle = input("Ingrese el talle del producto: ")
+                if ValidarEntero(talle, 25, 45) == False:
+                    break
+            while True:
+                os.system("cls")
+                print("Los precios actuales van desde 50.000 a 800.000")
+                precio = input("Ingrese el precio del producto: ")
+                if ValidarReal(precio, 50000, 800000) == False:
+                    break
+            while True:
+                os.system("cls")
+                stock = input("Ingrese la cantidad de stock que posee: ")
+                if ValidarEntero(stock, 1, 999999) == False:
+                    break
+            while True:
+                os.system("cls")
+                res = input("¿Desea registrar el producto? [S - N]: ")
+                print()
+                if res.lower() == "n":
+                    os.system("cls")
+                    print("El registro del producto fue cancelado.")
+                    print()
+                    os.system("pause")
+                elif res.lower() == "s":
+                    alProductos.seek(0)
+                    rProd = Producto()
+                    rProd.codigo = cod.upper()
+                    rProd.nombre = nombre.upper()
+                    rProd.marca = marca.upper()
+                    rProd.talle = talle
+                    rProd.precio = precio
+                    rProd.stock = stock
+                    rProd.activo = "A"
+                    pickle.dump(rProd, alProductos)
+                    alProductos.flush()
+                    print("El producto se registró con éxito.")
+                    print()
+                    os.system("pause")
+                    Carga()
+                else:
+                    print("La opción ingresada no existe, por favor ingresela nuevamente.")
+                    print()
+                    os.system("pause")    
+
+
+
+        else:
+            print("La opción ingresada no existe, por favor ingresela nuevamente.")
+            print()
+            os.system("pause")
 
     
 def Prints():
