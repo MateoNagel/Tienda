@@ -11,15 +11,16 @@ class Producto:
         self.talle = 0
         self.precio = 0.0
         self.stock = 0
-        self.activo = "A"
+        self.activo = "A" #"A" = Activo - "B" = "Baja"
 
 class Cliente:
     def __init__(self):
-        self.nombre = ""
-        self.direccion = ""
+        self.usuario = ""
+        self.direccion = [" "," "," "]
         self.telefono = ""
-        self.historial = "" 
-
+        self.mail = ""
+        self.activo = "A" #"A" = Activo - "B" = "Baja"
+        self.deudas = "N" #"N" = No - "S" = Sí
 
 ### Valida que el "nro" ingresado este dentro del rango asignado en las variables "desde" y "hasta" ###
 def ValidarReal(nro, desde, hasta):
@@ -246,8 +247,119 @@ def Menu_Clientes():
             print("La opción no existe, por favor ingresa una opción válida.")
             print()
             os.system("pause")
-        
 
+### Comprueba la existencia de un cliente en el archivo clientes.dat ###
+def BuscarCliente(dato):
+    alClientes, afClientes  
+    t = os.path.getsize(afClientes)
+    alClientes.seek(0)
+    rClie = Cliente()
+    encontrado = False
+    while alClientes.tell() < t and not encontrado:
+        pos = alClientes.tell()
+        rClie = pickle.load(alClientes)
+        if rClie.nombre.lower() == dato.lower():
+            encontrado = True
+    if encontrado:
+        return True
+    else:
+        return -1        
+
+###  ###
+def RegistrarCliente():
+    global alClientes, afClientes
+    rClie = Cliente()
+    os.system("cls")
+    while True:
+        os.system("cls")
+        res = input("¿Desea registrar un cliente? [S - N]: ")
+        print()
+        if res.lower() == "n":
+            os.system("cls")
+            print("Regresando al menú anterior...")
+            print()
+            os.system("pause")
+            Menu_Clientes()
+        elif res.lower() == "s":
+            os.system("cls")
+            while True:
+                os.system("cls")
+                nombre = input("Ingrese el nombre del cliente: ")
+                print()
+                pos = BuscarCliente(nombre)
+                if pos != -1:
+                    os.system("cls")
+                    alClientes.seek(pos)
+                    rClie = pickle.load(alClientes)
+                    if rClie.activo == "B":
+                        while True:
+                            os.system("cls")
+                            print("El cliente está dado de baja.")
+                            print()
+                            res = input("¿Quiere darlo de alta nuevamente? [S - N]: ")
+                            print()
+                            if res.lower() == "n":
+                                print("El cliente seguirá de baja.")
+                                print()
+                                os.system("pause")
+                            elif res.lower() == "s":
+                                rClie.activo = "A"
+                                alClientes.seek(pos)
+                                pickle.dump(rClie, alClientes)
+                                alClientes.flush()
+                                print("El cliente fue dado de alta nuevamente.")
+                                print()
+                                os.system("pause")
+                                RegistrarCliente()
+                            else:
+                                print("La opción ingresada no existe, por favor ingresela nuevamente.")
+                                print()
+                                os.system("pause")
+                    else:
+                        print("El usuario ya está registrado en el sistema.")
+                        print()
+                        os.system("pause")
+                elif nombre == "0":
+                    print("Reiniciando menú...")
+                    print()
+                    os.system("pause")
+                    RegistrarCliente()    
+                elif pos == -1 and ValidarTexto(nombre) == False:
+                    break
+            os.system("cls")
+            while True:
+                os.system("cls")
+                print("Ingrese la dirección de su vivienda o departamento.")
+                print()
+                direccion = input("Ingrese el nombre de la calle: ")
+                if ValidarTexto(direccion) == False:
+                    break
+            while True:
+                os.system("cls")
+                print("Ingrese la dirección de su vivienda o departamento.")
+                print()
+                num = input("Ingrese el número: ")
+                flag = False
+                for i in range(len(num)):
+                    if num[i] >= "1" and num[i] <= "9":
+                        flag = True
+                    else:
+                        print("Debe ingresar un número para continuar.")
+                        print()
+                        os.system("pause")
+                if flag:
+                    break
+            os.system("cls")       
+            print("Ingrese la dirección de su vivienda o departamento.")
+            print()
+            print("Opcional")
+            dpto = input("Ingrese el número del departamento: ")
+            print()
+            
+
+
+
+### Ordena el archivo productos.dat del menor talle al mayor ###
 def Ordenamiento():
     global alProductos
     alProductos.seek(0)
@@ -265,7 +377,7 @@ def Ordenamiento():
     alProductos.flush()
 
 
-### Comprueba la existencia de un código, nombre o marca existente en el archivo productos.dat mediante la comparación de la variable "dato" ###
+### Comprueba la existencia de un producto en el archivo productos.dat ###
 def Buscar(dato):
     global alProductos, afProductos
     t = os.path.getsize(afProductos)
@@ -283,7 +395,7 @@ def Buscar(dato):
         return -1        
 
 
-def Prints():
+def PrintsProductos():
     print()
     print("Código", end="         ")
     print("Nombre", end="                   ")
@@ -463,7 +575,7 @@ def EliminarProducto():
             while True:
                 os.system("cls")
                 print("Lista de Productos Activos")
-                Prints()
+                PrintsProductos()
                 print("---------------------------------------------------------------------------------------------------------------")
                 alProductos.seek(0)
                 while alProductos.tell() < t:
@@ -582,7 +694,7 @@ def ModificarProducto():
             elif res.lower() == "s":
                 os.system("cls")
                 print("Lista de Productos")
-                Prints()
+                PrintsProductos()
                 print("---------------------------------------------------------------------------------------------------------------")
                 alProductos.seek(0)
                 while alProductos.tell() < t:
@@ -776,7 +888,7 @@ def ListaProducto():
             if res == "1":
                 os.system("cls")
                 print("Listado Completo de Productos")
-                Prints()
+                PrintsProductos()
                 print("---------------------------------------------------------------------------------------------------------------")
                 while True:
                     try:
@@ -800,7 +912,7 @@ def ListaProducto():
                     elif ValidarTexto(marca) == False and Buscar(marca) != -1:
                         break
                 print("Listado de",marca.upper())
-                Prints()
+                PrintsProductos()
                 print("---------------------------------------------------------------------------------------------------------------")
                 alProductos.seek(0)
                 while alProductos.tell() < t:
@@ -820,9 +932,6 @@ def ListaProducto():
                 print("La opción ingresada no es válida. Intenteló de nuevo.")
                 print()
                 os.system("pause")   
-
-
-
 
 
 Menu_Principal()        
