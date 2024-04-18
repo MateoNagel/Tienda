@@ -16,7 +16,7 @@ class Producto:
 class Cliente:
     def __init__(self):
         self.usuario = ""
-        self.direccion = [" "," "," "]
+        self.direccion = [" "," "," "," "]
         self.telefono = ""
         self.mail = ""
         self.activo = "A" #"A" = Activo - "B" = "Baja"
@@ -253,12 +253,11 @@ def BuscarCliente(dato):
     alClientes, afClientes  
     t = os.path.getsize(afClientes)
     alClientes.seek(0)
-    rClie = Cliente()
     encontrado = False
     while alClientes.tell() < t and not encontrado:
         pos = alClientes.tell()
         rClie = pickle.load(alClientes)
-        if rClie.nombre.lower() == dato.lower():
+        if rClie.usuario.lower() == dato.lower():
             encontrado = True
     if encontrado:
         return True
@@ -350,12 +349,112 @@ def RegistrarCliente():
                 if flag:
                     break
             os.system("cls")       
-            print("Ingrese la dirección de su vivienda o departamento.")
+            while True:
+                os.system("cls")
+                print("Ingrese la dirección de su vivienda o departamento.")
+                print()
+                print("Opcional - Si no tiene departamento solo presione [ENTER]")
+                numdpto = input("Ingrese el número del departamento: ")
+                print()
+                if numdpto == "":
+                    break
+                elif numdpto >= "1" and numdpto <= "9":
+                    while True:
+                        os.system("cls")
+                        print("Ingrese la dirección de su vivienda o departamento.")
+                        print()
+                        dpto = input("Ingrese el departamento: ")
+                        print()
+                        if len(dpto) == 1:
+                            if ValidarTexto(dpto) == False:
+                                break
+                            else:
+                                os.system("cls")
+                                print("Solo debe ingresar el caracter que corresponda a su departamento.")
+                                print()
+                                os.system("pause")
+                        else:
+                            os.system("cls")
+                            print("El departamento solo debe poseer un caracter")
+                            print()
+                            os.system("pause")
+                    break
+                else:
+                    os.system("cls")
+                    print("Debe ingresar el número de departamento.")
+                    print()
+                    os.system("pause")    
+            os.system("cls")
+            while True:
+                os.system("cls")
+                print("Solo ingrese la caracterísitca y su número sin espacios entre medio.")
+                tel = input("Ingrese su teléfono: ")
+                print()
+                if len(tel) > 8 and len(tel) < 12:
+                    if tel >= "0" and tel <= "9":
+                        break
+                    else:
+                        os.system("cls")
+                        print("El teléfono no debe poseer letras y/o caracteres especiales.")
+                        print("")
+                        os.system("pause")
+                else:
+                    os.system("cls")
+                    print("Ingrese un número de teléfono válido.")
+                    print("")     
+                    os.system("pause")   
+            os.system("cls")
+            while True:
+                os.system("cls")
+                correo = input("Ingrese su correo electrónico: ")
+                print()
+                if correo == " ":
+                    break
+                else:
+                    flag = False
+                    for i in range(len(correo)):
+                        if correo[i] == "@":
+                            flag = True
+                    if flag:
+                        break
+                    else:
+                        os.system("cls")
+                        print("El correo ingresado no es válido, un ejemplo de correo puede ser: alvaro29@gmail.com")
+                        print()
+                        os.system("pause")
+            os.system("cls")
+            while True:
+                os.system("cls")
+                res = input("¿Confirmar registro de cliente? [S - N]: ")
+                if res.lower() == "n":
+                    os.system("cls")
+                    print("Registro cancelado.")
+                    print()
+                    os.system("pause")
+                elif res.lower() == "s":
+                    rClie.usuario = nombre.upper()
+                    rClie.direccion[0] = direccion.upper()
+                    rClie.direccion[1] = num
+                    rClie.direccion[2] = numdpto
+                    rClie.direccion[3] = dpto.upper()
+                    rClie.telefono = tel
+                    rClie.mail = correo
+                    pickle.dump(rClie, alClientes)
+                    alClientes.flush()
+                    print("El cliente se registró con éxito.")
+                    print()
+                    os.system("pause")
+                    RegistrarCliente()        
+                else:
+                    print("La opción ingresada no existe, por favor ingresela nuevamente.")
+                    print()
+                    os.system("pause")
+        else:
+            print("La opción ingresada no existe, por favor ingresela nuevamente.")
             print()
-            print("Opcional")
-            dpto = input("Ingrese el número del departamento: ")
-            print()
-            
+            os.system("pause")                    
+
+
 
 
 
