@@ -148,11 +148,10 @@ def Menu_Principal():
             Menu_Ventas()
             pass
         elif Op == "3":
-            Menu_Reportes()
+            #Menu_Reportes()
             pass
         elif Op == "4":
             alProductos.close()
-            alClientes.close()
             exit()          
         else:
             print("La opción no existe, por favor ingresa una opción válida")
@@ -252,7 +251,22 @@ def Venta():
                         os.system("pause")
                     else:
                         os.system("cls")
-                        print()    
+                        while True:
+                            PrintsProductos()
+                            print("---------------------------------------------------------------------------------------------------------------")
+                            mostrarProducto(rProd)
+                            print("---------------------------------------------------------------------------------------------------------------")
+                            print()
+                            cant = input("Ingrese la cantidad que desea comprar: ")
+                            if ValidarEntero(cant, 1, rProd.stock) == False:
+                                break
+                            else:
+                                os.system("cls")
+                                print("La cantidad ingresada debe de ser entre 1 y", rProd.stock)
+                                print()
+                                os.system("pause")
+                        print()        
+                                
                 else:
                     print("El producto no se encontró en el sistema. Por favor, intentaló de nuevo con otro código.")
                     print()
